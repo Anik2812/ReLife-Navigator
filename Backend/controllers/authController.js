@@ -1,59 +1,85 @@
+const config = require('../config');
 const authService = require('../services/AuthService');
-const bcrypt = require('bcryptjs');
+const User = require('../models/User'); // Assuming a User model exists
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-// Register new user
+// Register user
 exports.register = async (req, res) => {
   const { name, email, password } = req.body;
 
+  // Input validation (you can improve this further based on your requirements)
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
   try {
-    const result = await authService.register(name, email, password);
-    res.status(201).json(result);
+    // Check if the user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    // Hash the password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create the user
+    const newUser = new User({ name, email, password: hashedPassword });
+    await newUser.save();
+
+    // Return the newly created user (excluding password)
+    res.status(201).json({ name: newUser.name, email: newUser.email });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Server error during registration' });
   }
 };
 
-// Login user and set JWT token in cookies
+// Login user
 exports.login = async (req, res) => {
   const { email, password } = req.body;
 
+  // Validate input
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
   try {
+    // Find the user by email
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
+    // Check if the password matches
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user._id },
+      config.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
 
-    // Set token as a cookie
-    res.cookie('token', token, {
-      httpOnly: true, // The cookie is not accessible via JavaScript (for security).
-      secure: process.env.NODE_ENV === 'production', // Use secure cookies in production (requires HTTPS).
-      sameSite: 'None', // Required for cross-origin cookie handling.
-      maxAge: 60 * 60 * 1000, // Cookie expiration time (1 hour)
-    });
-
-    res.json({ message: 'Login successful' });
+    // Return the token
+    res.json({ token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error during login' });
   }
 };
 
-// Get user profile using JWT token (with authentication middleware)
+// Get user profile (authenticated route)
 exports.profile = async (req, res) => {
   try {
-    // Fetch user profile using the userId from the JWT token
+    // Fetch the user profile using the userId from the request
     const user = await authService.getProfile(req.user.userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.json(user);
   } catch (error) {
-    res.status(404).json({ message: 'User not found' });
+    res.status(500).json({ message: 'Server error while fetching profile' });
   }
 };

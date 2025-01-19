@@ -12,6 +12,7 @@ import PersonalRecoveryHub from './components/PersonalRecoveryHub';
 import CommunityPage from './components/CommunityPage';
 import LoginComponent from './components/LoginComponent';
 import RegisterComponent from './components/RegisterComponent';
+import DisasterReliefMap from './components/DisasterReliefMap';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="/quiz" element={<QuizPage />} />
           <Route path="/recovery-hub" element={<PersonalRecoveryHub />} />
           <Route path="/community" element={<CommunityPage />} />
+          <Route path="/disaster-relief-map" element={<DisasterReliefMap />} />
           <Route path="/login" element={<LoginComponent />} />
           <Route path="/register" element={<RegisterComponent />} />
         </Routes>

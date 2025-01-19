@@ -1,55 +1,91 @@
 import React, { useState, useEffect } from 'react';
-import ActionPlanService from '../services/ActionPlanService';
+import DisasterService from '../services/disasterService';
 
 const PersonalRecoveryHub = () => {
+  const [disasters, setDisasters] = useState([]);
+  const [selectedDisaster, setSelectedDisaster] = useState('');
+  const [selectedPhase, setSelectedPhase] = useState('preparation');
   const [tasks, setTasks] = useState([]);
-  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const fetchActionPlan = async () => {
-      const response = await ActionPlanService.getActionPlan();
-      if (response.data) {
-        setTasks(response.data.tasks);
-        setProgress(response.data.progress);
+    const fetchDisasters = async () => {
+      try {
+        const data = await DisasterService.getDisasters();
+        setDisasters(data);
+      } catch (error) {
+        console.error('Error fetching disasters:', error);
       }
     };
 
-    fetchActionPlan();
+    fetchDisasters();
   }, []);
 
-  const handleToggleTask = (index) => {
+  const handleDisasterChange = (e) => {
+    const disaster = disasters.find(d => d.category === e.target.value);
+    setSelectedDisaster(disaster);
+    setSelectedPhase('preparation');
+    setTasks(disaster.preparation.map(task => ({ text: task, completed: false })));
+  };
+
+  const handlePhaseChange = (e) => {
+    setSelectedPhase(e.target.value);
+    setTasks(selectedDisaster[e.target.value].map(task => ({ text: task, completed: false })));
+  };
+
+  const toggleTaskCompletion = (index) => {
     const newTasks = [...tasks];
     newTasks[index].completed = !newTasks[index].completed;
     setTasks(newTasks);
-    const newProgress = (newTasks.filter(task => task.completed).length / newTasks.length) * 100;
-    setProgress(newProgress);
-  };
-
-  const handleSave = async () => {
-    await ActionPlanService.saveActionPlan(tasks, progress);
   };
 
   return (
-    <div className="personal-recovery-hub">
-      <h1>Your Custom Action Plan</h1>
-      <div>
-        <progress value={progress} max="100"></progress>
-        <span>{progress}%</span>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="container mx-auto">
+        <h2 className="text-4xl font-bold mb-8 text-center">Personal Recovery Hub</h2>
+        <div className="mb-6">
+          <label className="block mb-2 text-lg font-semibold">Select a Disaster:</label>
+          <select
+            value={selectedDisaster.category || ''}
+            onChange={handleDisasterChange}
+            className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white"
+          >
+            <option value="">-- Select a Disaster --</option>
+            {disasters.map((disaster) => (
+              <option key={disaster.category} value={disaster.category}>{disaster.category}</option>
+            ))}
+          </select>
+        </div>
+        {selectedDisaster && (
+          <div className="mb-6">
+            <label className="block mb-2 text-lg font-semibold">Select a Phase:</label>
+            <select
+              value={selectedPhase}
+              onChange={handlePhaseChange}
+              className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white"
+            >
+              <option value="preparation">Preparation</option>
+              <option value="response">Response</option>
+              <option value="recovery">Recovery</option>
+            </select>
+          </div>
+        )}
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h3 className="text-2xl font-bold mb-4">{selectedPhase.charAt(0).toUpperCase() + selectedPhase.slice(1)} Tasks</h3>
+          <ul className="list-disc list-inside">
+            {tasks.map((task, index) => (
+              <li key={index} className="mb-2 flex items-center">
+                <input
+                  type="checkbox"
+                  checked={task.completed}
+                  onChange={() => toggleTaskCompletion(index)}
+                  className="mr-2"
+                />
+                <span className={task.completed ? 'line-through' : ''}>{task.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <ul>
-        {tasks.map((task, index) => (
-          <li key={index}>
-            <input
-              type="checkbox"
-              checked={task.completed}
-              onChange={() => handleToggleTask(index)}
-            />
-            <span>{task.title}</span>
-            <p>{task.description}</p>
-          </li>
-        ))}
-      </ul>
-      <button onClick={handleSave}>Save Action Plan</button>
     </div>
   );
 };

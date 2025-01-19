@@ -11,10 +11,10 @@ const LoginComponent = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await AuthService.login({ email, password });
-      // Store the token in localStorage after login
-      localStorage.setItem('authToken', response.token);
-      navigate('/');  // Redirect to homepage after successful login
+      const response = await AuthService.login(email, password);
+      const { token } = response;
+      localStorage.setItem('authToken', token);  // Store token in localStorage
+      navigate('/');
     } catch (error) {
       setMessage('Invalid credentials');
     }
@@ -53,6 +53,15 @@ const LoginComponent = () => {
             Login
           </button>
         </form>
+        <p className="mt-4 text-center">
+          Don't have an account?{' '}
+          <button
+            onClick={() => navigate('/register')}
+            className="text-blue-500 hover:underline"
+          >
+            Register
+          </button>
+        </p>
       </div>
     </div>
   );

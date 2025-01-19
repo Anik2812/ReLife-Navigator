@@ -1,29 +1,29 @@
-const Question = require('../models/Question');
+const Question = require('../models/Question'); // Assuming you have a Question model
 
-exports.getQuestions = async (req, res) => {
+const getQuestions = async (req, res) => {
   try {
     const questions = await Question.find();
     res.json(questions);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
 };
 
-exports.submitAnswers = async (req, res) => {
+const submitAnswers = async (req, res) => {
   const { answers } = req.body;
-
   try {
     const questions = await Question.find();
-    let score = 0;
-
-    questions.forEach((question, index) => {
-      if (question.correctAnswer === answers[index]) {
-        score += 1;
-      }
+    let correctAnswers = [];
+    answers.forEach((answer, index) => {
+      correctAnswers[index] = answer === questions[index].correctAnswer;
     });
-
-    res.json({ score });
+    res.json({ correctAnswers });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getQuestions,
+  submitAnswers,
 };

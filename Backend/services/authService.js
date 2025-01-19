@@ -46,26 +46,15 @@ const login = async (email, password) => {
   return { token };
 };
 
-const getProfile = async (token) => {
-    const response = await axios.get(`${API_URL}/auth/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true, // Ensures cookies are included in cross-origin requests
-    });
-    return response.data;
-  };
-  
+const getProfile = async (userId) => {
+  // Find the user by ID and exclude the password field
+  const user = await User.findById(userId).select('-password');
+  if (!user) {
+    throw new Error('User not found');
+  }
 
-// const getProfile = async (userId) => {
-//   // Find the user by ID and exclude the password field
-//   const user = await User.findById(userId).select('-password');
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
-
-//   return user;
-// };
+  return user;
+};
 
 module.exports = {
   register,

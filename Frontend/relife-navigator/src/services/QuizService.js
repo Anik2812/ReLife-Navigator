@@ -1,22 +1,28 @@
 import axios from 'axios';
 import AuthService from './AuthService';
 
-const API_URL = 'http://localhost:5000/api/quiz/';
+const API_URL = process.env.REACT_APP_API_URL;
 
-const getQuestions = () => {
-  return axios.get(API_URL + 'questions');
+const getQuestions = async () => {
+  const response = await axios.get(`${API_URL}/quiz/questions`);
+  return response.data;
 };
 
-const submitAnswers = (answers) => {
+const submitAnswers = async (answers) => {
   const user = AuthService.getCurrentUser();
-  return axios.post(API_URL + 'submit', { answers }, {
+  if (!user) throw new Error('User is not authenticated');
+
+  const response = await axios.post(`${API_URL}/quiz/submit`, { answers }, {
     headers: {
-      'Authorization': `Bearer ${user.token}`,
+      Authorization: `Bearer ${user.token}`,
     },
   });
+  return response.data;
 };
 
-export default {
+const QuizService = {
   getQuestions,
   submitAnswers,
 };
+
+export default QuizService;

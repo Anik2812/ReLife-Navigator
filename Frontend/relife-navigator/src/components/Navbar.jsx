@@ -12,7 +12,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('authToken');
       if (token) {
         try {
           const response = await AuthService.getProfile(token);
@@ -40,9 +40,9 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('authToken');
     setUser(null);
-    navigate('/');
+    navigate('/login');
   };
 
   return (
@@ -58,18 +58,25 @@ const Navbar = () => {
           <button onClick={toggleDarkMode} className="ml-4">
             {isDarkMode ? <FaSun size={20} /> : <FaMoon size={20} />}
           </button>
-          <div className="relative">
-            <button onClick={toggleProfileMenu} className="hover:text-blue-400 transition-colors flex items-center">
-              <FaUserCircle size={24} />
-              {user && <span className="ml-2">{user.name}</span>}
-            </button>
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-700">Profile</Link>
-                <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
-              </div>
-            )}
-          </div>
+          {user ? (
+            <div className="relative">
+              <button onClick={toggleProfileMenu} className="hover:text-blue-400 transition-colors flex items-center">
+                <FaUserCircle size={24} />
+                <span className="ml-2">{user.name}</span>
+              </button>
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
+                  <div className="px-4 py-2">
+                    <p className="font-bold">{user.name}</p>
+                    <p className="text-sm text-gray-400">{user.email}</p>
+                  </div>
+                  <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/register" className="hover:text-blue-400 transition-colors">Register</Link>
+          )}
         </div>
         <div className="md:hidden">
           <button onClick={toggleMenu} className="focus:outline-none">
@@ -89,15 +96,22 @@ const Navbar = () => {
           <button onClick={toggleDarkMode} className="block px-4 py-2 hover:bg-gray-700">
             {isDarkMode ? '🌙' : '☀️'}
           </button>
-          <div className="relative">
-            <button onClick={toggleProfileMenu} className="block px-4 py-2 hover:bg-gray-700">Profile</button>
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
-                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-700">Profile</Link>
-                <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
-              </div>
-            )}
-          </div>
+          {user ? (
+            <div className="relative">
+              <button onClick={toggleProfileMenu} className="block px-4 py-2 hover:bg-gray-700">Profile</button>
+              {isProfileOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
+                  <div className="px-4 py-2">
+                    <p className="font-bold">{user.name}</p>
+                    <p className="text-sm text-gray-400">{user.email}</p>
+                  </div>
+                  <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link to="/register" className="block px-4 py-2 hover:bg-gray-700">Register</Link>
+          )}
         </div>
       )}
     </nav>

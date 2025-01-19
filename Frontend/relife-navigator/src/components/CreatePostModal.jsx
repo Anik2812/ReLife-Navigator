@@ -1,73 +1,78 @@
 import React, { useState } from 'react';
 
-const CreatePostModal = ({ isOpen, onClose, onCreate }) => {
+const CreatePostModal = ({ onClose, onCreate }) => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const newPost = {
-      id: Date.now(),
       title,
-      description,
+      content,
       tags: tags.split(',').map(tag => tag.trim()),
-      profilePic: 'https://via.placeholder.com/150',
-      likes: 0,
-      comments: 0,
       image,
     };
     onCreate(newPost);
-    onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-lg">
-        <h2 className="text-2xl font-bold mb-4">Create Post</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+      <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-3xl font-bold mb-6 text-center">Create New Post</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-bold mb-2">Title</label>
+            <label className="block text-sm font-medium mb-2">Title</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 rounded bg-gray-800 text-white"
               required
+              className="w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-bold mb-2">Description</label>
+            <label className="block text-sm font-medium mb-2">Content</label>
             <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
               required
-            ></textarea>
+              className="w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
+            />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-bold mb-2">Tags (comma separated)</label>
+            <label className="block text-sm font-medium mb-2">Tags (comma separated)</label>
             <input
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              className="w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-sm font-bold mb-2">Image</label>
+            <label className="block text-sm font-medium mb-2">Image URL</label>
             <input
-              type="file"
-              onChange={(e) => setImage(URL.createObjectURL(e.target.files[0]))}
-              className="w-full p-2 rounded bg-gray-800 text-white"
+              type="text"
+              value={image}
+              onChange={(e) => setImage(e.target.value)}
+              className="w-full p-2 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:border-blue-500"
             />
           </div>
           <div className="flex justify-end space-x-4">
-            <button type="button" onClick={onClose} className="bg-red-500 py-2 px-4 rounded">Cancel</button>
-            <button type="submit" className="bg-blue-500 py-2 px-4 rounded">Create</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105"
+            >
+              Create
+            </button>
           </div>
         </form>
       </div>
