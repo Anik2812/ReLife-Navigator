@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-gray-900 text-white font-sans;
+}
+
+.hero {
+  @apply flex flex-col items-center justify-center h-screen text-center;
+}
+
+.hero h1 {
+  @apply text-5xl md:text-6xl font-bold mb-4;
+}
+
+.hero p {
+  @apply text-xl md:text-2xl mb-8;
+}
+
+.cta-button {
+  @apply bg-gradient-to-r from-blue-500 to-purple-500 text-white py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105;
+}
+
+.features {
+  @apply py-20 bg-gray-900 text-white;
+}
+
+.feature-card {
+  @apply bg-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105;
+}
+
+.testimonials {
+  @apply py-20 bg-gray-900 text-white;
+}
+
+.testimonial-card {
+  @apply bg-gray-800 p-6 rounded-lg shadow-lg transition-transform transform hover:scale-105;
+}
+
+.cta-section {
+  @apply bg-gradient-to-r from-blue-500 to-purple-500 text-white py-20;
+}
+
+.contact-form {
+  @apply py-20 bg-gray-900 text-white;
+}
+
+.footer {
+  @apply bg-gray-900 text-white py-6;
+}
+
+.footer a {
+  @apply hover:underline mx-2;
+}
+
+.social-icons {
+  @apply flex justify-center space-x-4;
+}
+
+/* Dark mode styles */
+:root {
+  --bg-color: #1a202c;
+  --text-color: #ffffff;
+}
+
+.dark {
+  --bg-color: #ffffff;
+  --text-color: #1a202c;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}

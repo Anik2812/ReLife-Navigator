@@ -1,0 +1,55 @@
+{
+  "name": "relife-navigator",
+  "version": "1.0.0",
+  "description": "A responsive landing page for the ReLife Navigator app, empowering users with tailored action plans, emotional support, and disaster relief resources.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "build:css": "tailwindcss build src/index.css -o public/dist/output.css"
+  },
+  "keywords": [
+    "react",
+    "tailwindcss",
+    "landing-page",
+    "responsive"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.5",
+    "jspdf": "^2.5.2",
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-icons": "^5.4.0",
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.1.3"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "css-minimizer-webpack-plugin": "^7.0.0",
+    "postcss": "^8.5.1",
+    "react-scripts": "^5.0.1",
+    "tailwindcss": "^3.4.17"
+  },
+  "homepage": "https://yourwebsite.com/relife-navigator",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/relife-navigator.git"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
