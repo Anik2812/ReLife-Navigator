@@ -1,9 +1,6 @@
 const express = require('express');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const quizRoutes = require('./routes/quizRoutes');
-const actionPlanRoutes = require('./routes/actionPlanRoutes');
-const postRoutes = require('./routes/postRoutes');
 const dotenv = require('dotenv');
 const cors = require('cors'); 
 
@@ -16,20 +13,19 @@ connectDB();
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: 'http://localhost:3000' })); // Replace with your frontend URL
-
+app.use(cors({
+    origin: 'http://localhost:3000', // Your React frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allow the Authorization header
+    credentials: true, // Allow cookies to be sent across origins
+  }));
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/quiz', quizRoutes);
-app.use('/api', actionPlanRoutes);
-app.use('/api', postRoutes);
-
-
 
 // Root route
 app.get('/', (req, res) => {
-  res.send('Server running successfully for ReLife Navigator');
+  res.send('Server running successfully');
 });
 
 const PORT = process.env.PORT || 5000;

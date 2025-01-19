@@ -29,28 +29,45 @@ const QuizPage = () => {
   };
 
   return (
-    <div className="quiz-page">
-      <form onSubmit={handleSubmit}>
-        {questions.map((question, index) => (
-          <div key={index}>
-            <h3>{question.question}</h3>
-            {question.options.map((option, i) => (
-              <div key={i}>
-                <input
-                  type="radio"
-                  name={`question-${index}`}
-                  value={option}
-                  checked={answers[index] === option}
-                  onChange={() => handleAnswerChange(index, option)}
-                />
-                <label>{option}</label>
+    <div className="min-h-screen bg-gray-900 text-white p-6">
+      <div className="container mx-auto">
+        <h2 className="text-4xl font-bold mb-8 text-center">Disaster Preparedness Quiz</h2>
+        <form onSubmit={handleSubmit}>
+          {questions.map((question, index) => (
+            <div key={index} className="bg-gray-800 p-6 mb-6 rounded-lg shadow-lg">
+              <h3 className="text-2xl font-semibold mb-4">{index + 1}. {question.question}</h3>
+              <div className="space-y-2">
+                {question.options.map((option, i) => (
+                  <label key={i} className="block bg-gray-700 p-2 rounded-lg cursor-pointer hover:bg-gray-600">
+                    <input
+                      type="radio"
+                      name={`question-${index}`}
+                      value={option}
+                      checked={answers[index] === option}
+                      onChange={() => handleAnswerChange(index, option)}
+                      className="mr-2"
+                    />
+                    {option}
+                  </label>
+                ))}
               </div>
-            ))}
+            </div>
+          ))}
+          <div className="text-center">
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Submit
+            </button>
           </div>
-        ))}
-        <button type="submit">Submit</button>
-      </form>
-      {score !== null && <p>Your score: {score}</p>}
+        </form>
+        {score !== null && (
+          <div className="mt-8 text-center">
+            <p className="text-2xl">Your score: {score}</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

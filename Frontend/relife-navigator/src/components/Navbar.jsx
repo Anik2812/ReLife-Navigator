@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon, FaUserCircle } from 'react-icons/fa';
-import axios from 'axios';
+import AuthService from '../services/AuthService';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,12 +15,8 @@ const Navbar = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('/api/auth/profile', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          setUser(response.data);
+          const response = await AuthService.getProfile(token);
+          setUser(response);
         } catch (error) {
           console.error('Error fetching user:', error);
         }

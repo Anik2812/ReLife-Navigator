@@ -1,4 +1,3 @@
-// filepath: /d:/d_drive/Arcade/ReLife Navigator/ReLife-Navigator/Frontend/relife-navigator/src/services/QuizService.js
 import axios from 'axios';
 import AuthService from './AuthService';
 
