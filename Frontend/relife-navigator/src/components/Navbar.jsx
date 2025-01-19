@@ -1,11 +1,34 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaSun, FaMoon, FaUserCircle } from 'react-icons/fa';
+import axios from 'axios';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('/api/auth/profile', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setUser(response.data);
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -18,6 +41,12 @@ const Navbar = () => {
 
   const toggleProfileMenu = () => {
     setIsProfileOpen(!isProfileOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setUser(null);
+    navigate('/');
   };
 
   return (
@@ -36,11 +65,12 @@ const Navbar = () => {
           <div className="relative">
             <button onClick={toggleProfileMenu} className="hover:text-blue-400 transition-colors flex items-center">
               <FaUserCircle size={24} />
+              {user && <span className="ml-2">{user.name}</span>}
             </button>
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
-                <a href="#settings" className="block px-4 py-2 hover:bg-gray-700">Settings</a>
-                <a href="#logout" className="block px-4 py-2 hover:bg-gray-700">Logout</a>
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-700">Profile</Link>
+                <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
               </div>
             )}
           </div>
@@ -67,8 +97,8 @@ const Navbar = () => {
             <button onClick={toggleProfileMenu} className="block px-4 py-2 hover:bg-gray-700">Profile</button>
             {isProfileOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-gray-800 text-white rounded-lg shadow-lg py-2">
-                <a href="#settings" className="block px-4 py-2 hover:bg-gray-700">Settings</a>
-                <a href="#logout" className="block px-4 py-2 hover:bg-gray-700">Logout</a>
+                <Link to="/profile" className="block px-4 py-2 hover:bg-gray-700">Profile</Link>
+                <button onClick={handleLogout} className="block px-4 py-2 hover:bg-gray-700 w-full text-left">Logout</button>
               </div>
             )}
           </div>

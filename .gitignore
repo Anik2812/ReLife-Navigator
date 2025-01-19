@@ -1,3 +1,9 @@
 
 /Frontend/relife-navigator/node_modules
 /Frontend/relife-navigator/build
+Backend/.env
+/Backend/node_modules
+Backend/package-lock.json
+Frontend/relife-navigator/package-lock.json
+Frontend/relife-navigator/package-lock.json
+Frontend/relife-navigator/package-lock.json

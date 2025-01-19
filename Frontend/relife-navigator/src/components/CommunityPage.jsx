@@ -1,63 +1,102 @@
-import React, { useState } from 'react';
-import PostCard from './PostCard';
-import CreatePostModal from './CreatePostModal';
-
-const initialPosts = [
-  {
-    id: 1,
-    profilePic: 'https://via.placeholder.com/150',
-    title: 'Post 1',
-    description: 'Description for post 1',
-    tags: ['tag1', 'tag2'],
-    likes: 0,
-    comments: 0,
-  },
-  {
-    id: 2,
-    profilePic: 'https://via.placeholder.com/150',
-    title: 'Post 2',
-    description: 'Description for post 2',
-    tags: ['tag3', 'tag4'],
-    likes: 0,
-    comments: 0,
-  },
-];
+import React, { useState, useEffect } from 'react';
+import PostService from '../services/PostService';
 
 const CommunityPage = () => {
-  const [posts, setPosts] = useState(initialPosts);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState({ title: '', description: '', tags: '' });
 
-  const handleLike = (id) => {
-    setPosts(posts.map(post => post.id === id ? { ...post, likes: post.likes + 1 } : post));
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const response = await PostService.getPosts();
+      setPosts(response.data);
+    };
+
+    fetchPosts();
+  }, []);
+
+  const handleCreatePost = async (e) => {
+    e.preventDefault();
+    const tags = newPost.tags.split(',').map(tag => tag.trim());
+    await PostService.createPost(newPost.title, newPost.description, tags);
+    setNewPost({ title: '', description: '', tags: '' });
+    const response = await PostService.getPosts();
+    setPosts(response.data);
   };
 
-  const handleComment = (id) => {
-    setPosts(posts.map(post => post.id === id ? { ...post, comments: post.comments + 1 } : post));
+  const handleLikePost = async (postId) => {
+    await PostService.likePost(postId);
+    const response = await PostService.getPosts();
+    setPosts(response.data);
   };
 
-  const handleCreatePost = (newPost) => {
-    setPosts([newPost, ...posts]);
+  const handleAddComment = async (postId, text) => {
+    await PostService.addComment(postId, text);
+    const response = await PostService.getPosts();
+    setPosts(response.data);
   };
 
   return (
-    <div className="community-page bg-gray-900 text-white min-h-screen p-6">
-      <div className="container mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold">Community</h1>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white py-2 px-4 rounded-full shadow-lg transition-transform transform hover:scale-105"
-          >
-            Create Post
-          </button>
+    <div className="community-page">
+      <h1>Community</h1>
+      <form onSubmit={handleCreatePost}>
+        <div>
+          <label>Title</label>
+          <input
+            type="text"
+            value={newPost.title}
+            onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+            required
+          />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map(post => (
-            <PostCard key={post.id} post={post} onLike={handleLike} onComment={handleComment} />
-          ))}
+        <div>
+          <label>Description</label>
+          <textarea
+            value={newPost.description}
+            onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
+            required
+          ></textarea>
         </div>
+        <div>
+          <label>Tags (comma separated)</label>
+          <input
+            type="text"
+            value={newPost.tags}
+            onChange={(e) => setNewPost({ ...newPost, tags: e.target.value })}
+          />
+        </div>
+        <button type="submit">Create Post</button>
+      </form>
+      <div>
+        {posts.map((post) => (
+          <div key={post._id}>
+            <h3>{post.title}</h3>
+            <p>{post.description}</p>
+            <div>
+              {post.tags.map((tag, index) => (
+                <span key={index}>{tag}</span>
+              ))}
+            </div>
+            <button onClick={() => handleLikePost(post._id)}>Like ({post.likes})</button>
+            <div>
+              <h4>Comments</h4>
+              {post.comments.map((comment, index) => (
+                <p key={index}>{comment.text}</p>
+              ))}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const text = e.target.elements.comment.value;
+                  handleAddComment(post._id, text);
+                  e.target.reset();
+                }}
+              >
+                <input type="text" name="comment" required />
+                <button type="submit">Add Comment</button>
+              </form>
+            </div>
+          </div>
+        ))}
       </div>
-      <CreatePostModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onCreate={handleCreatePost} />
     </div>
   );
 };
